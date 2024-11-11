@@ -1,4 +1,3 @@
-import json
 import logging
 import os
 import pickle
@@ -66,46 +65,59 @@ json_schema = {
 structured_llm = llm.with_structured_output(json_schema)
 
 # 遍历文件夹中的pickle文件
-pickle_filename = "0aba53cf-4abf-4279-b3b5-75b5d704440f.pkl"
-with open(pickle_filename, "rb") as f:
-    text_list = pickle.load(f)
+def process_pickle_file(pickle_filename):
+    with open(pickle_filename, "rb") as f:
+        text_list = pickle.load(f)
 
-data = merge_pickle_list(text_list)
-data = fix_utf8(data)
-# data = trim_data(data)
+    data = merge_pickle_list(text_list)
+    data = fix_utf8(data)
+    # data = trim_data(data)
 
-qa_list = []
+    qa_list = []
 
-for i in range(0, len(data), 20):
-    chunk = data[i : i + 20]
-    if len(chunk) < 10:
-        break
+    for i in range(0, len(data), 20):
+        chunk = data[i : i + 20]
+        if len(chunk) < 10:
+            break
 
-    # 将chunk转换为字符串
-    chunk_text = " ".join([text[0] for text in chunk])
+        # 将chunk转换为字符串
+        chunk_text = " ".join([text[0] for text in chunk])
 
-    # 执行structured_llm，生成问题和答案
-    response = structured_llm.invoke(
-        f"""基于以下内容，编写1个问答对，用来测试大语言模型及其相关应用（比如rag）在生态环境专业领域中的能力和表现: 
+        # 执行structured_llm，生成问题和答案
+        response = structured_llm.invoke(
+            f"""基于以下内容，编写1个问答对，用来测试大语言模型及其相关应用（比如rag）在生态环境专业领域中的能力和表现: 
 
-        {chunk_text}
+            {chunk_text}
 
-        问题要尽量难一点，并提供相应的详细答案（需要详细的阐述）。"""
-    )
+            问题要尽量难一点，并提供相应的详细答案（需要详细的阐述）。"""
+        )
 
-    print(response)
-    qa_pair = response.get('qa_pairs', [])
+        print(response)
+        qa_pair = response.get('qa_pairs', [])
 
-     # 添加到qa_list
-    qa_list.append({
-        'Question': qa_pair['Question'],
-        'Answer': qa_pair['Answer'],
-        'Level': qa_pair['Level'],
-        'Type': qa_pair['Type'],
-        'Domain': qa_pair['Domain'],
-        'PickleFile': pickle_filename
-    })
+        # 添加到qa_list
+        qa_list.append({
+            'Question': qa_pair['Question'],
+            'Answer': qa_pair['Answer'],
+            'Level': qa_pair['Level'],
+            'Type': qa_pair['Type'],
+            'Domain': qa_pair['Domain'],
+            'PickleFile': pickle_filename
+        })
 
-# 将qa_list转换为DataFrame并保存到csv文件
-df = pd.DataFrame(qa_list)
-df.to_csv("output.csv", index=False, encoding='utf-8')
+    return qa_list
+
+folder_path = "pickles"
+pickle_names = os.listdir(folder_path)
+
+for pickle in pickle_names:
+    pickle_filepath = os.path.join(folder_path, pickle)
+    qa_list = process_pickle_file(pickle_filepath)
+    df = pd.DataFrame(qa_list)
+    if not os.path.isfile("output.csv"):
+        df.to_csv("output.csv", index=False, encoding='utf-8')
+    else:
+        df.to_csv("output.csv", mode='a', header=False, index=False, encoding='utf-8')
+
+    
+

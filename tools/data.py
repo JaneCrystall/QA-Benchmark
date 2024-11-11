@@ -5,8 +5,6 @@ import pandas as pd
 
 import tiktoken
 from bs4 import BeautifulSoup
-from dotenv import load_dotenv
-from tenacity import retry, stop_after_attempt, wait_fixed
 
 
 def num_tokens_from_string(string: str) -> int:
