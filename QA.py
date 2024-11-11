@@ -54,7 +54,7 @@ json_schema = {
                         "enum": ["环境工程学", "大气环境学", "水环境学"]
                     }
                 },
-                "required": ["Question", "Answer", "Category"]
+                "required": ["Question", "Answer", "Level", "Type", "Domain"]
             },
             "minItems": 1,
             "maxItems": 1
@@ -64,7 +64,6 @@ json_schema = {
 }
 structured_llm = llm.with_structured_output(json_schema)
 
-# 遍历文件夹中的pickle文件
 def process_pickle_file(pickle_filename):
     with open(pickle_filename, "rb") as f:
         text_list = pickle.load(f)
@@ -92,8 +91,8 @@ def process_pickle_file(pickle_filename):
             问题要尽量难一点，并提供相应的详细答案（需要详细的阐述）。"""
         )
 
-        print(response)
-        qa_pair = response.get('qa_pairs', [])
+        # print(response)
+        qa_pair = response.get('qa_pairs', [])[0]
 
         # 添加到qa_list
         qa_list.append({
@@ -102,7 +101,7 @@ def process_pickle_file(pickle_filename):
             'Level': qa_pair['Level'],
             'Type': qa_pair['Type'],
             'Domain': qa_pair['Domain'],
-            'PickleFile': os.path.splitext(pickle_filename)[0]
+            'PickleFile': os.path.splitext(os.path.basename(pickle_filename))[0]
         })
 
     return qa_list
@@ -110,8 +109,8 @@ def process_pickle_file(pickle_filename):
 folder_path = "pickles"
 pickle_names = os.listdir(folder_path)
 
-for pickle in pickle_names:
-    pickle_filepath = os.path.join(folder_path, pickle)
+for item in pickle_names:
+    pickle_filepath = os.path.join(folder_path, item)
     qa_list = process_pickle_file(pickle_filepath)
     df = pd.DataFrame(qa_list)
     if not os.path.isfile("output.csv"):
