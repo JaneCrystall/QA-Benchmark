@@ -51,7 +51,7 @@ json_schema = {
                     "Domain": {
                         "type": "string",
                         "description": "Domain of the question",
-                        "enum": ["环境工程学", "大气环境学", "水环境学"]
+                        "enum": ["环境工程学", "大气环境学", "水环境学","环境生态学","土壤环境学","生物环境学","环境控制学","环境监测学","环境化学","环境地学","环境毒理学","环境法学","环境经济学","环境管理学","环境伦理学"]
                     }
                 },
                 "required": ["Question", "Answer", "Level", "Type", "Domain"]
@@ -74,9 +74,9 @@ def process_pickle_file(pickle_filename):
 
     qa_list = []
 
-    for i in range(0, len(data), 20):
-        chunk = data[i : i + 20]
-        if len(chunk) < 10:
+    for i in range(0, len(data), 60):
+        chunk = data[i : i + 60]
+        if len(chunk) < 20:
             break
 
         # 将chunk转换为字符串
@@ -88,7 +88,7 @@ def process_pickle_file(pickle_filename):
 
             {chunk_text}
 
-            问题要尽量难一点，并提供相应的详细答案（需要详细的阐述）。"""
+            问题要对于生态环境领域的人来说是有难度的，并提供相应的详细答案（需要详细的阐述）。确保难度划分是基于问题的复杂性、推理深度和背景知识需求的。"""
         )
 
         # print(response)
