@@ -102,7 +102,7 @@ def process_pickle_file(pickle_filename):
             'Level': qa_pair['Level'],
             'Type': qa_pair['Type'],
             'Domain': qa_pair['Domain'],
-            'PickleFile': pickle_filename
+            'PickleFile': os.path.splitext(pickle_filename)[0]
         })
 
     return qa_list
