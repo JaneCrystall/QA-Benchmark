@@ -19,4 +19,7 @@ pip install -r requirements.txt --upgrade
 ```
 ```bash
 nohup .venv/bin/python3.12 QA.py > QA_log.txt 2>&1 &
+
+find output/ -type f | wc -l
+find pickles/ -type f | wc -l
 ```

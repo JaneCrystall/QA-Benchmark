@@ -163,3 +163,4 @@ cython_debug/
 /pickles
 /output
 .csv
+.txt
