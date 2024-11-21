@@ -162,5 +162,7 @@ cython_debug/
 #.idea/
 /pickles
 /output
-.csv
-.txt
+*.csv
+*.json
+*.txt
+qa_output/
